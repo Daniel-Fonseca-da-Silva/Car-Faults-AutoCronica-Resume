@@ -35,12 +35,12 @@ People buying a used car, or who already own one, usually find out about the mod
 
 The platform is four independent repositories. The Nest backend is the only data entry point, and no client talks to the AI service directly.
 
-| System | Role | Stack | Docs |
-|---|---|---|---|
-| **car-faults-api** | Core backend: catalog, lookup, auth, community, admin, caching | NestJS 11 · TypeORM · PostgreSQL 16 · Redis 7 · Cloudflare R2 | [docs/02-car-faults-api.md](docs/02-car-faults-api.md) |
-| **car-faults-ai-api** | Stateless AI microservice: generates and translates known issues | FastAPI · Pydantic · httpx · Gemini → Groq → OpenRouter · keyword RAG | [docs/03-car-faults-ai-api.md](docs/03-car-faults-ai-api.md) |
-| **car-faults-web** | Public site with programmatic SEO, user area and admin panel | Next.js 16 (App Router) · React 19 · Tailwind 4 · shadcn/ui · next-intl | [docs/04-car-faults-web.md](docs/04-car-faults-web.md) |
-| **car_faults_app** | Mobile app (Android on Google Play; the Flutter project also supports iOS) | Flutter · Material 3 · Provider · Dio · AdMob | [docs/05-car-faults-app.md](docs/05-car-faults-app.md) |
+| System | Role | Stack | Repository | Docs |
+|---|---|---|---|---|
+| **car-faults-api** | Core backend: catalog, lookup, auth, community, admin, caching | NestJS 11 · TypeORM · PostgreSQL 16 · Redis 7 · Cloudflare R2 | [GitHub](https://github.com/Daniel-Fonseca-da-Silva/car-faults-api) | [docs/02-car-faults-api.md](docs/02-car-faults-api.md) |
+| **car-faults-ai-api** | Stateless AI microservice: generates and translates known issues | FastAPI · Pydantic · httpx · Gemini → Groq → OpenRouter · keyword RAG | [GitHub](https://github.com/Daniel-Fonseca-da-Silva/car-faults-ai-api) | [docs/03-car-faults-ai-api.md](docs/03-car-faults-ai-api.md) |
+| **car-faults-web** | Public site with programmatic SEO, user area and admin panel | Next.js 16 (App Router) · React 19 · Tailwind 4 · shadcn/ui · next-intl | [GitHub](https://github.com/Daniel-Fonseca-da-Silva/car-faults-web) | [docs/04-car-faults-web.md](docs/04-car-faults-web.md) |
+| **car_faults_app** | Mobile app (Android on Google Play; the Flutter project also supports iOS) | Flutter · Material 3 · Provider · Dio · AdMob | [GitHub](https://github.com/Daniel-Fonseca-da-Silva/car-faults-app) | [docs/05-car-faults-app.md](docs/05-car-faults-app.md) |
 
 ```mermaid
 flowchart LR
@@ -141,6 +141,12 @@ Before steps 3 and 4, the request has to pass the anti-abuse gate: **Cloudflare 
 The repositories reference each other by relative path, so clone them side by side.
 
 ```bash
+# 0. Clone the four repositories next to each other
+git clone https://github.com/Daniel-Fonseca-da-Silva/car-faults-api.git
+git clone https://github.com/Daniel-Fonseca-da-Silva/car-faults-ai-api.git
+git clone https://github.com/Daniel-Fonseca-da-Silva/car-faults-web.git
+git clone https://github.com/Daniel-Fonseca-da-Silva/car-faults-app.git car_faults_app
+
 # 1. AI service (stub mode, no LLM keys needed)
 cd car-faults-ai-api
 python -m venv venv && source venv/bin/activate

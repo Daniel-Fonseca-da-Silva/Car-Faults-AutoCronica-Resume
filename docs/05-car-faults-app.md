@@ -121,7 +121,7 @@ The `X-Client: mobile` header tells the API **not to require Turnstile** on the 
 
 | Screen | What it does | Endpoints |
 |---|---|---|
-| **Home** | Search (make and model with autocomplete, year from next year back to 1990, engine, fuel type, optional doors), platform stats, "most reported faults", AdMob banner | `GET /lookups`, `/platform/stats`, `/platform/faults` |
+| **Home** | Search (make and model with autocomplete, year from next year back to 1900, engine, fuel type, optional doors), platform stats, "most reported faults", AdMob banner | `GET /lookups`, `/platform/stats`, `/platform/faults` |
 | **Results / Vehicle** | Hero with photo, "Add to garage", "Add to favorites", tech specs (years, engine, fuel, doors, power), summary "N known issues, X critical, Y high severity", expandable issue cards | `/user-vehicles/status`, `/activity-logs/favorites/:id` |
 | **Expanded issue** | Description, typical mileage, clickable sources, reviews (stars + text), community fixes with step-by-step, cost and 👍/👎 votes, comments with photos, report | `/reviews`, `/fixes`, `/fixes/:id/vote`, `/comments`, `/storage/comment-images`, `/reports`, `POST /activity-logs` (`defect_consulted`) |
 | **Defects** | Paginated list of most-reported faults with filters | `/platform/faults` |

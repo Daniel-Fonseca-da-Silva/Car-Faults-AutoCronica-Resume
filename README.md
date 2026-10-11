@@ -10,13 +10,13 @@
 
 <p align="center">
   <strong>Chronic reliability by vehicle model.</strong><br>
-  What typically fails on a given make / model / year / engine, how severe it is, what it costs, and how it gets fixed.
+  What typically fails on a given make / model / year / engine, how severe it is, at what mileage, and how it gets fixed.
 </p>
 
 <p align="center">
   <a href="https://autocronica.autos">autocronica.autos</a> ·
   Android (Google Play) ·
-  <code>pt-PT</code> · <code>en-GB</code> · <code>es-ES</code>
+  <code>pt-PT</code> · <code>pt-BR</code> · <code>en-GB</code> · <code>en-US</code> · <code>es-ES</code> · <code>es-MX</code> · <code>fr-FR</code> · <code>de-DE</code> · <code>it-IT</code>
 </p>
 
 ---
@@ -25,9 +25,9 @@
 
 People buying a used car, or who already own one, usually find out about the model's chronic faults too late. The information exists, but it's spread across forums, YouTube videos, ADAC/TÜV reports and Facebook groups, and rarely in a form that answers the question that matters:
 
-> *"For this model, with this engine and from this year, what usually fails, at what mileage, how serious is it, and how much does the fix cost?"*
+> *"For this model, with this engine and from this year, what usually fails, at what mileage, how serious is it, and how does it get fixed?"*
 
-**Auto Crónica** puts that answer in one place. The user picks a vehicle and gets a structured list of known issues: severity, typical mileage, sources, step-by-step fixes with estimated cost, and community reviews and comments.
+**Auto Crónica** puts that answer in one place. The user picks a vehicle and gets a structured list of known issues: severity, typical mileage, sources, step-by-step fixes, and community reviews and comments.
 
 **What it is not:** it does not do VIN/plate history, odometer-fraud checks or accident records. That belongs to services like carVertical, Certidão Automóvel or IPO. The analysis here is **per model**, not per individual vehicle. All AI-generated content is labelled as such and is **indicative**: it does not replace a mechanic.
 
@@ -81,11 +81,11 @@ Screenshots of the Flutter app on a tablet, in `en-GB` and `pt-PT`.
 <table>
   <tr>
     <td align="center" width="33%"><img src="docs/assets/tablet/vehicle-tablet-en-01.webp" alt="Vehicle"><br><sub><b>Vehicle</b>: photo, garage/favorites, tech specs and a severity summary of known issues</sub></td>
-    <td align="center" width="33%"><img src="docs/assets/tablet/vehicle-tablet-en-02.webp" alt="Known issue"><br><sub><b>Known issue</b>: description, sources, rating and a step-by-step fix with cost and votes</sub></td>
+    <td align="center" width="33%"><img src="docs/assets/tablet/vehicle-tablet-en-02.webp" alt="Known issue"><br><sub><b>Known issue</b>: description, sources, rating and a step-by-step fix with votes</sub></td>
     <td align="center" width="33%"><img src="docs/assets/tablet/vehicle-tablet-pt-02.webp" alt="Fix and comments (pt-PT)"><br><sub><b>Fix and comments</b> (<code>pt-PT</code>): community comment with a photo</sub></td>
   </tr>
   <tr>
-    <td align="center"><img src="docs/assets/tablet/defects-tablet-en.webp" alt="Most-reported faults"><br><sub><b>Defects</b>: most-reported faults, with a label when the content falls back to another language</sub></td>
+    <td align="center"><img src="docs/assets/tablet/defects-tablet-en.webp" alt="Most-reported faults"><br><sub><b>Defects</b>: most-reported faults (tap a card to open its lookup), with a label when the content falls back to another language</sub></td>
     <td align="center"><img src="docs/assets/tablet/favorite-tablet-en.webp" alt="Favorites"><br><sub><b>Favorites</b>: saved models to compare</sub></td>
     <td align="center"><img src="docs/assets/tablet/about-tablet-en.webp" alt="About"><br><sub><b>About</b>: the problem, the solution and who is behind it</sub></td>
   </tr>
@@ -94,12 +94,14 @@ Screenshots of the Flutter app on a tablet, in `en-GB` and `pt-PT`.
 ## Features
 
 **For every visitor**
-- Search by make, model, year, fuel type, engine and (optionally) number of doors.
+- Search by make (from a fixed list of manufacturers), model, year (from 1900), fuel type, engine and (optionally) number of doors.
 - Vehicle page: tech specs, known issues, and a summary by severity (`low`, `medium`, `high`, `critical`).
-- For each known issue: detailed description, typical mileage, sources, and fixes with steps and an estimated cost in euros.
+- For each known issue: detailed description, typical mileage, sources, and step-by-step fixes. Fixes no longer include a cost estimate.
 - Read community reviews (1-5 stars) and comments.
-- A defects hub you can browse by make → model → year → fuel → engine, with canonical, indexable URLs (web).
-- Three languages: `pt-PT` (default), `en-GB` and `es-ES`.
+- A defects hub you can browse by make → model → year → fuel → engine, with canonical, indexable URLs (web). Only models that have known issues appear in the catalog, so there are no thin pages.
+- Languages:
+  - **Web, API and AI service:** `pt-PT` (default on the web), `pt-BR`, `en-GB`, `en-US`, `es-ES`, `es-MX`, `fr-FR`, `de-DE` and `it-IT`, each with its own hreflang and SEO metadata.
+  - **Mobile app:** `en-GB` (default), `pt-PT`, `pt-BR`, `es-ES` and `fr-FR`.
 
 **For signed-in users (Google login)**
 - Rate known issues, comment (with an optional photo) and vote on fixes (👍/👎).
@@ -109,7 +111,8 @@ Screenshots of the Flutter app on a tablet, in `en-GB` and `pt-PT`.
 - Profile with personal stats (searches, issues viewed, votes) and account deletion.
 
 **For administrators (`role = admin`)**
-- CRUD for vehicle models (with a catalog photo), known issues and fixes.
+- CRUD for vehicle models (with a catalog photo, and a filter for models with or without an image), known issues and fixes.
+- The admin area is guarded on the server (layout guard + `role` check in the API).
 - Moderation queue for reports: mark as reviewed, dismiss, or remove the content.
 
 ## How a lookup works (summary)
@@ -121,7 +124,9 @@ The platform's central request is `GET /v1/lookups`. It goes through three level
 3. **Translation**: the model has known issues in another language, and the AI translates them (cheaper and more consistent than generating again).
 4. **Generation**: unknown vehicle; the AI generates known issues and fixes, which are saved in one transaction.
 
-Before steps 3 and 4, the request has to pass the anti-abuse gate: **Cloudflare Turnstile** on the web, and a **per-IP rate limit in Redis** for the mobile app. Details in [docs/01-architecture.md](docs/01-architecture.md#the-lookup-flow).
+The lookup language can be any of the 9 supported locales; it is part of the Redis cache key and is sent to the AI service for generation and translation.
+
+Before steps 3 and 4, the request has to pass the anti-abuse gate: **Cloudflare Turnstile** on the web (the widget is localized to the page language), and a **per-IP rate limit in Redis** for the mobile app. Details in [docs/01-architecture.md](docs/01-architecture.md#the-lookup-flow).
 
 ## Documentation index
 
@@ -179,9 +184,9 @@ All four repositories follow the same rule: **lint + tests with at least 90% cov
 
 | Repository | Lint | Tests | Test files |
 |---|---|---|---|
-| car-faults-api | ESLint + Prettier | Jest (unit + e2e) | ~138 |
-| car-faults-ai-api | Ruff + mypy + pip-audit | pytest | 13 modules / ~168 cases |
-| car-faults-web | ESLint (next) | Jest + React Testing Library | ~156 |
+| car-faults-api | ESLint + Prettier | Jest (unit + e2e) | ~140 |
+| car-faults-ai-api | Ruff + mypy + pip-audit | pytest | 12 modules / ~168 cases |
+| car-faults-web | ESLint (next) | Jest + React Testing Library | ~157 |
 | car_faults_app | `dart format` + `flutter analyze --fatal-infos` | flutter_test | ~106 |
 
 ## License
